@@ -8,171 +8,125 @@
 
 import UIKit
 
-class ContinuesTouchCollectionView: UICollectionView {
-  var lock: Bool = false {
+extension UITouch {
+  /// Returns touch id in string format.
+  public var touchID: String {
+    return String(format: "%p", self)
+  }
+}
+
+/// Informs touch state changes.
+public protocol ContinuesTouchCollectionViewCellDelegate: class {
+  /// Gets called when a cell is started touching.
+  ///
+  /// - Parameter continuesToucCollectionViewCell: The cell started touching.
+  func continuesTouchCollectionViewCellDidStartTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
+
+  /// Gets called when a cell is stopped touching.
+  ///
+  /// - Parameter continuesToucCollectionViewCell: The cell stopped touching.
+  func continuesTouchCollectionViewCellDidStopTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
+}
+
+/// The custom collection view cell type for working with `ContinuesTouchCollectionView`. You can
+public class ContinuesTouchCollectionViewCell: UICollectionViewCell {
+  /// Delegate that informs about touch state changes.
+  public weak var delegate: ContinuesTouchCollectionViewCellDelegate?
+
+  /// Assigned touch id if cell is being touched.
+  fileprivate var touchID: String? {
     didSet {
-      isScrollEnabled = !lock
+      isTouching = touchID != nil
     }
   }
 
-  private var highlightedCells = [UICollectionViewCell]() {
+  /// Returns true if cell is currently touching.
+  public var isTouching: Bool = false {
     didSet {
-      print("highlighted: \(highlightedCells.map({ indexPath(for: $0)?.item }))")
+      if isTouching {
+        delegate?.continuesTouchCollectionViewCellDidStartTouching(self)
+      } else {
+        delegate?.continuesTouchCollectionViewCellDidStopTouching(self)
+      }
     }
   }
-  private var firstHiglightedCells = [UICollectionViewCell]() {
+}
+
+/// Custom collection view that responds multiple touches of `ContinuesTouchCollectionViewCell`s.
+public class ContinuesTouchCollectionView: UICollectionView {
+  /// Currently touching cells.
+  public private(set) var touchingCells = [ContinuesTouchCollectionViewCell]()
+
+  /// Scroll locking mechanisim for enabling the multiple touch on cells.
+  public var isLocked: Bool = false {
     didSet {
-      print("first: \(firstHiglightedCells.map({ indexPath(for: $0)?.item }))")
+      isScrollEnabled = !isLocked
     }
   }
 
-  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesBegan(touches, with: event)
 
-    // Add first highlighted cells
     for touch in touches {
       let location = touch.location(in: self)
       if let indexPath = indexPathForItem(at: location),
-        let cell = cellForItem(at: indexPath) {
-        if !firstHiglightedCells.contains(cell) {
-          firstHiglightedCells.append(cell)
-          highlightedCells.append(cell)
-        }
+        let cell = cellForItem(at: indexPath) as? ContinuesTouchCollectionViewCell,
+        !cell.isTouching {
+        cell.touchID = touch.touchID
+        touchingCells.append(cell)
       }
     }
   }
 
-  override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesMoved(touches, with: event)
-    var unhighlightingCells = [UICollectionViewCell]()
+    var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
     for touch in touches {
       let location = touch.location(in: self)
+
       if let indexPath = indexPathForItem(at: location),
-        let cell = cellForItem(at: indexPath) {
+        let cell = cellForItem(at: indexPath) as? ContinuesTouchCollectionViewCell,
+        !cell.isTouching {
 
-        // Highlight new cell
-        if !highlightedCells.contains(cell) {
-          highlightedCells.append(cell)
-          if !firstHiglightedCells.contains(cell) {
-            cell.isHighlighted = true
-            delegate?.collectionView?(self, didHighlightItemAt: indexPath)
-          }
+        if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+          untouchingCells.append(untouchingCell)
         }
-      }
 
-      // Unhighlighting cells
-      for cell in highlightedCells {
-        if cell.frame.contains(location),
-          let index = unhighlightingCells.index(of: cell) {
-          unhighlightingCells.remove(at: index)
-        } else if !cell.frame.contains(location) {
-          unhighlightingCells.append(cell)
-        }
+        cell.touchID = touch.touchID
+        touchingCells.append(cell)
       }
     }
 
-    // Unhighlight cells
-    for cell in unhighlightingCells {
-      if !firstHiglightedCells.contains(cell),
-        let indexPath = indexPath(for: cell) {
-        cell.isHighlighted = false
-        delegate?.collectionView?(self, didUnhighlightItemAt: indexPath)
-      }
-    }
-
-    highlightedCells = highlightedCells.filter({ !unhighlightingCells.contains($0) })
-
-//    guard lock == true,
-//      let touchLocation = touches.first?.location(in: self),
-//      let cell = visibleCells.filter({ $0.frame.contains(touchLocation) }).first,
-//      let newIndexPath = indexPath(for: cell),
-//      cell != highlightedCell,
-//      let oldCell = highlightedCell,
-//      let oldIndexPath = indexPath(for: oldCell)
-//      else { return }
-//
-//    // Unselect old cell
-//    if highlightedCell != firstHiglightedCell {
-//      highlightedCell?.isHighlighted = false
-//      delegate?.collectionView?(self, didUnhighlightItemAt: oldIndexPath)
-//    }
-//
-//    // Select new cell
-//    if cell != firstHiglightedCell {
-//      cell.isHighlighted = true
-//      delegate?.collectionView?(self, didHighlightItemAt: newIndexPath)
-//    }
-//
-//    // Set new highlighed cell
-//    highlightedCell = cell
+    untouchingCells.forEach({ $0.touchID = nil })
+    touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
-  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesEnded(touches, with: event)
+    var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
     for touch in touches {
-      let location = touch.location(in: self)
-      if let indexPath = indexPathForItem(at: location),
-        let cell = cellForItem(at: indexPath) {
-        if !firstHiglightedCells.contains(cell),
-          let index = highlightedCells.index(of: cell) {
-          highlightedCells.remove(at: index)
-          cell.isHighlighted = false
-          delegate?.collectionView?(self, didUnhighlightItemAt: indexPath)
-        } else if let firstHighlightedIndex = firstHiglightedCells.index(of: cell),
-          let highlightedIndex = highlightedCells.index(of: cell) {
-          firstHiglightedCells.remove(at: firstHighlightedIndex)
-          highlightedCells.remove(at: highlightedIndex)
-        }
+      if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+        untouchingCells.append(untouchingCell)
       }
     }
 
-//    guard lock == true,
-//      let cell = highlightedCell,
-//      let cellIndexPath = indexPath(for: cell)
-//      else { return }
-//
-//    if cell != firstHiglightedCell {
-//      cell.isHighlighted = false
-//      delegate?.collectionView?(self, didUnhighlightItemAt: cellIndexPath)
-//    }
-//
-//    highlightedCell = nil
-//    firstHiglightedCell = nil
+    untouchingCells.forEach({ $0.touchID = nil })
+    touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
-  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+  public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesCancelled(touches, with: event)
+    var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
     for touch in touches {
-      let location = touch.location(in: self)
-      if let indexPath = indexPathForItem(at: location),
-        let cell = cellForItem(at: indexPath) {
-        if !firstHiglightedCells.contains(cell),
-          let index = highlightedCells.index(of: cell) {
-          highlightedCells.remove(at: index)
-          cell.isHighlighted = false
-          delegate?.collectionView?(self, didUnhighlightItemAt: indexPath)
-        } else if let firstHighlightedIndex = firstHiglightedCells.index(of: cell),
-          let highlightedIndex = highlightedCells.index(of: cell) {
-          firstHiglightedCells.remove(at: firstHighlightedIndex)
-          highlightedCells.remove(at: highlightedIndex)
-        }
+      if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+        untouchingCells.append(untouchingCell)
       }
     }
 
-//    guard lock == true,
-//      let cell = highlightedCell,
-//      let cellIndexPath = indexPath(for: cell)
-//      else { return }
-//
-//    if cell != firstHiglightedCell {
-//      cell.isHighlighted = false
-//      delegate?.collectionView?(self, didUnhighlightItemAt: cellIndexPath)
-//    }
-//
-//    highlightedCell = nil
-//    firstHiglightedCell = nil
+    untouchingCells.forEach({ $0.touchID = nil })
+    touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 }

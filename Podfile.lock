@@ -1,0 +1,16 @@
+PODS:
+  - COSTouchVisualizer (1.0.6)
+
+DEPENDENCIES:
+  - COSTouchVisualizer
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - COSTouchVisualizer
+
+SPEC CHECKSUMS:
+  COSTouchVisualizer: a398089327a6c02897823614d7447ccc97198997
+
+PODFILE CHECKSUM: e4fe0da0b239e31aa29d1eb902a4ca0870f029bc
+
+COCOAPODS: 1.6.0.beta.1

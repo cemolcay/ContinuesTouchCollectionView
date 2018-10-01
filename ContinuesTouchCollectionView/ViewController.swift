@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ExampleCell: UICollectionViewCell {
+class ExampleCell: ContinuesTouchCollectionViewCell {
   static let cellReuseIdentifier = "exampleCell"
   @IBOutlet var label: UILabel?
 
@@ -16,14 +16,14 @@ class ExampleCell: UICollectionViewCell {
     label?.text = nil
   }
 
-  override var isHighlighted: Bool {
+  override var isTouching: Bool {
     didSet {
-      backgroundColor = isHighlighted ? .lightGray : .darkGray
+      backgroundColor = isTouching ? .lightGray : .darkGray
     }
   }
 }
 
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, ContinuesTouchCollectionViewCellDelegate {
   @IBOutlet weak var collectionView: ContinuesTouchCollectionView?
   @IBOutlet weak var lockSegmentedControl: UISegmentedControl?
 
@@ -35,7 +35,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
   }
 
   @IBAction func lockSegmentControlValueChanged(sender: UISegmentedControl) {
-    collectionView?.lock = sender.selectedSegmentIndex == 0
+    collectionView?.isLocked = sender.selectedSegmentIndex == 0
   }
 
   // MARK: UICollectionViewDataSource
@@ -47,16 +47,19 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExampleCell.cellReuseIdentifier, for: indexPath) as? ExampleCell else { fatalError() }
     cell.label?.text = "\(indexPath.item)"
+    cell.delegate = self
     return cell
   }
 
-  // MARK: UICollectionViewDelegate
+  // MARK: ContinuesTouchCollectionViewCellDelegate
 
-  func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+  func continuesTouchCollectionViewCellDidStartTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell) {
+    guard let indexPath = collectionView?.indexPath(for: continuesToucCollectionViewCell) else { return }
     print("select \(indexPath.item)")
   }
 
-  func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+  func continuesTouchCollectionViewCellDidStopTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell) {
+    guard let indexPath = collectionView?.indexPath(for: continuesToucCollectionViewCell) else { return }
     print("deselect \(indexPath.item)")
   }
 }

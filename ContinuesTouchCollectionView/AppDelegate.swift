@@ -7,14 +7,18 @@
 //
 
 import UIKit
+import COSTouchVisualizer
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, COSTouchVisualizerWindowDelegate {
 
-  var window: UIWindow?
+  lazy var window: UIWindow? = {
+    var customWindow = COSTouchVisualizerWindow(frame: UIScreen.main.bounds)
+    customWindow.touchVisualizerWindowDelegate = self
+    return customWindow
+  }()
 
-
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     return true
   }
@@ -41,6 +45,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
 
+  func touchVisualizerWindowShouldShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+    return true
+  }
 
+  func touchVisualizerWindowShouldAlwaysShowFingertip(_ window: COSTouchVisualizerWindow!) -> Bool {
+    return true
+  }
 }
 

@@ -43,9 +43,9 @@ public protocol ContinuesTouchCollectionViewCellDelegate: class {
 
 ``` swift
 override var isTouching: Bool {
-	didSet {
-	  backgroundColor = isTouching ? .lightGray : .darkGray
-	}
+  didSet {
+    backgroundColor = isTouching ? .lightGray : .darkGray
+  }
 }
 ```
 

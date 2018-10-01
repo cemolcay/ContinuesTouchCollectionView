@@ -1,7 +1,7 @@
 ContinuesTouchCollectionView
 ====
 
-A collection view subview for handling multiple touch on cells.
+A collection view subview for handling multiple continues touch on cells.
 
 Demo
 ----

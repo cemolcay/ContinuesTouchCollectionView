@@ -27,7 +27,7 @@ Usage
 ----
 
 * Create a `ContinuesTouchCollectionView` instance and populate `ContinuesTouchCollectionViewCell`s on it.  
-* You can set `isLocked` property to true for disabling the scrolling on collection view and enabling multiple touches. 
+* You can set `isLocked` property to true for disabling the scrolling on collection view and enabling multiple continues touches. 
 * When you are populating your cells, set `ContinuesTouchCollectionViewCellDelegate` to the view controller you are working on.
 * Get informed when your cells started or stopped being touched with the delegate methods.
 

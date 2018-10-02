@@ -33,8 +33,8 @@ Usage
 
 ``` swift
 public protocol ContinuesTouchCollectionViewCellDelegate: class {
-  func continuesTouchCollectionViewCellDidStartTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
-  func continuesTouchCollectionViewCellDidStopTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
+  func continuesTouchCollectionViewCellDidStartTouching(_ cell: ContinuesTouchCollectionViewCell)
+  func continuesTouchCollectionViewCellDidStopTouching(_ cell: ContinuesTouchCollectionViewCell)
 }
 ```
 

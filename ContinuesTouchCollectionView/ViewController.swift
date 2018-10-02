@@ -53,13 +53,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
 
   // MARK: ContinuesTouchCollectionViewCellDelegate
 
-  func continuesTouchCollectionViewCellDidStartTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell) {
-    guard let indexPath = collectionView?.indexPath(for: continuesToucCollectionViewCell) else { return }
+  func continuesTouchCollectionViewCellDidStartTouching(_ cell: ContinuesTouchCollectionViewCell) {
+    guard let indexPath = collectionView?.indexPath(for: cell) else { return }
     print("select \(indexPath.item)")
   }
 
-  func continuesTouchCollectionViewCellDidStopTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell) {
-    guard let indexPath = collectionView?.indexPath(for: continuesToucCollectionViewCell) else { return }
+  func continuesTouchCollectionViewCellDidStopTouching(_ cell: ContinuesTouchCollectionViewCell) {
+    guard let indexPath = collectionView?.indexPath(for: cell) else { return }
     print("deselect \(indexPath.item)")
   }
 }

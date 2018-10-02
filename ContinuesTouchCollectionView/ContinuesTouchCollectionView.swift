@@ -19,13 +19,13 @@ extension UITouch {
 public protocol ContinuesTouchCollectionViewCellDelegate: class {
   /// Gets called when a cell is started touching.
   ///
-  /// - Parameter continuesToucCollectionViewCell: The cell started touching.
-  func continuesTouchCollectionViewCellDidStartTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
+  /// - Parameter cell: The cell started touching.
+  func continuesTouchCollectionViewCellDidStartTouching(_ cell: ContinuesTouchCollectionViewCell)
 
   /// Gets called when a cell is stopped touching.
   ///
-  /// - Parameter continuesToucCollectionViewCell: The cell stopped touching.
-  func continuesTouchCollectionViewCellDidStopTouching(_ continuesToucCollectionViewCell: ContinuesTouchCollectionViewCell)
+  /// - Parameter cell: The cell stopped touching.
+  func continuesTouchCollectionViewCellDidStopTouching(_ cell: ContinuesTouchCollectionViewCell)
 }
 
 /// The custom collection view cell type for working with `ContinuesTouchCollectionView`. You can

@@ -29,7 +29,7 @@ public protocol ContinuesTouchCollectionViewCellDelegate: class {
 }
 
 /// The custom collection view cell type for working with `ContinuesTouchCollectionView`. You can
-public class ContinuesTouchCollectionViewCell: UICollectionViewCell {
+open class ContinuesTouchCollectionViewCell: UICollectionViewCell {
   /// Delegate that informs about touch state changes.
   public weak var delegate: ContinuesTouchCollectionViewCellDelegate?
 
@@ -41,7 +41,7 @@ public class ContinuesTouchCollectionViewCell: UICollectionViewCell {
   }
 
   /// Returns true if cell is currently touching.
-  public var isTouching: Bool = false {
+  open var isTouching: Bool = false {
     didSet {
       if isTouching {
         delegate?.continuesTouchCollectionViewCellDidStartTouching(self)
@@ -53,18 +53,18 @@ public class ContinuesTouchCollectionViewCell: UICollectionViewCell {
 }
 
 /// Custom collection view that responds multiple touches of `ContinuesTouchCollectionViewCell`s.
-public class ContinuesTouchCollectionView: UICollectionView {
+open class ContinuesTouchCollectionView: UICollectionView {
   /// Currently touching cells.
   public private(set) var touchingCells = [ContinuesTouchCollectionViewCell]()
 
   /// Scroll locking mechanisim for enabling the multiple touch on cells.
-  public var isLocked: Bool = false {
+  open var isLocked: Bool = false {
     didSet {
       isScrollEnabled = !isLocked
     }
   }
 
-  public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+  open override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesBegan(touches, with: event)
 
     for touch in touches {
@@ -78,7 +78,7 @@ public class ContinuesTouchCollectionView: UICollectionView {
     }
   }
 
-  public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+  open override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesMoved(touches, with: event)
     var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
@@ -102,7 +102,7 @@ public class ContinuesTouchCollectionView: UICollectionView {
     touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
-  public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+  open override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesEnded(touches, with: event)
     var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
@@ -116,7 +116,7 @@ public class ContinuesTouchCollectionView: UICollectionView {
     touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
-  public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+  open override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesCancelled(touches, with: event)
     var untouchingCells = [ContinuesTouchCollectionViewCell]()
 

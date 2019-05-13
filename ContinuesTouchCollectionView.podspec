@@ -16,9 +16,9 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "ContinuesTouchCollectionView"
-  spec.version      = "0.0.1"
+  spec.version      = "0.0.2"
   spec.summary      = "A collection view subview for handling multiple touch on cells."
-  spec.swift_version = "4.2"
+  spec.swift_version = "5.0"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?

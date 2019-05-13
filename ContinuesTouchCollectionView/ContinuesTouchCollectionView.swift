@@ -33,10 +33,10 @@ open class ContinuesTouchCollectionViewCell: UICollectionViewCell {
   /// Delegate that informs about touch state changes.
   public weak var delegate: ContinuesTouchCollectionViewCellDelegate?
 
-  /// Assigned touch id if cell is being touched.
-  fileprivate var touchID: String? {
+  /// Assigned touch if cell is being touched.
+  public fileprivate(set) var touch: UITouch? {
     didSet {
-      isTouching = touchID != nil
+      isTouching = touch?.touchID != nil
     }
   }
 
@@ -72,7 +72,7 @@ open class ContinuesTouchCollectionView: UICollectionView {
       if let indexPath = indexPathForItem(at: location),
         let cell = cellForItem(at: indexPath) as? ContinuesTouchCollectionViewCell,
         !cell.isTouching {
-        cell.touchID = touch.touchID
+        cell.touch? = touch
         touchingCells.append(cell)
       }
     }
@@ -89,16 +89,16 @@ open class ContinuesTouchCollectionView: UICollectionView {
         let cell = cellForItem(at: indexPath) as? ContinuesTouchCollectionViewCell,
         !cell.isTouching {
 
-        if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+        if let untouchingCell = touchingCells.filter({ $0.touch?.touchID == touch.touchID }).first {
           untouchingCells.append(untouchingCell)
         }
 
-        cell.touchID = touch.touchID
+        cell.touch = touch
         touchingCells.append(cell)
       }
     }
 
-    untouchingCells.forEach({ $0.touchID = nil })
+    untouchingCells.forEach({ $0.touch = nil })
     touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
@@ -107,12 +107,12 @@ open class ContinuesTouchCollectionView: UICollectionView {
     var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
     for touch in touches {
-      if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+      if let untouchingCell = touchingCells.filter({ $0.touch?.touchID == touch.touchID }).first {
         untouchingCells.append(untouchingCell)
       }
     }
 
-    untouchingCells.forEach({ $0.touchID = nil })
+    untouchingCells.forEach({ $0.touch = nil })
     touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 
@@ -121,12 +121,12 @@ open class ContinuesTouchCollectionView: UICollectionView {
     var untouchingCells = [ContinuesTouchCollectionViewCell]()
 
     for touch in touches {
-      if let untouchingCell = touchingCells.filter({ $0.touchID == touch.touchID }).first {
+      if let untouchingCell = touchingCells.filter({ $0.touch?.touchID == touch.touchID }).first {
         untouchingCells.append(untouchingCell)
       }
     }
 
-    untouchingCells.forEach({ $0.touchID = nil })
+    untouchingCells.forEach({ $0.touch = nil })
     touchingCells = touchingCells.filter({ !untouchingCells.contains($0) })
   }
 }

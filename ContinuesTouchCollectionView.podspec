@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "ContinuesTouchCollectionView"
-  spec.version      = "0.0.2"
+  spec.version      = "0.0.3"
   spec.summary      = "A collection view subview for handling multiple touch on cells."
   spec.swift_version = "5.0"
 

@@ -72,7 +72,7 @@ open class ContinuesTouchCollectionView: UICollectionView {
       if let indexPath = indexPathForItem(at: location),
         let cell = cellForItem(at: indexPath) as? ContinuesTouchCollectionViewCell,
         !cell.isTouching {
-        cell.touch? = touch
+        cell.touch = touch
         touchingCells.append(cell)
       }
     }
